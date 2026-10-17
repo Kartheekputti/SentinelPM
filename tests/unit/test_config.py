@@ -66,7 +66,9 @@ class TestYamlConfig:
         assert settings.random_seed == 99
         assert settings.log_level == "WARNING"
 
-    def test_env_still_overrides_yaml(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_env_still_overrides_yaml(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         config = tmp_path / "config.yaml"
         config.write_text("random_seed: 99\n", encoding="utf-8")
         monkeypatch.setenv("SENTINELPM_RANDOM_SEED", "5")

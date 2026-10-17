@@ -54,6 +54,9 @@ known-first-party = ["app", "tests"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q --strict-markers"
+markers = [
+    "integration: end-to-end tests that require the real dataset or trained artifacts",
+]
 filterwarnings = ["error::DeprecationWarning:app.*"]
 
 [tool.coverage.run]
