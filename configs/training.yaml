@@ -1,0 +1,59 @@
+# SentinelPM training configuration.
+#
+# This file documents the models, hyperparameter search spaces and the
+# model-selection metric. Edit it to change experiments; no code changes are
+# required. Hyperparameter keys are prefixed with ``model__`` because the
+# estimator is the ``model`` step of a scikit-learn pipeline.
+#
+# Selection rationale:
+#   Failures are rare (~3.4%). Accuracy is useless (predicting "no failure"
+#   scores ~96.6%) and ROC-AUC flatters rare-positive problems. PR-AUC
+#   (average precision) focuses on the positive class and is the primary
+#   metric. Thresholds are chosen to maximise F1 on out-of-fold training
+#   predictions; operators can lower the threshold to trade precision for
+#   recall if missed failures are particularly costly.
+
+random_seed: 42
+test_size: 0.2
+cv_folds: 5
+
+# ``average_precision`` is PR-AUC. Used for HyperparameterSearch scoring and
+# model ranking.
+scoring: average_precision
+primary_metric: average_precision
+
+# Metric optimised when picking the decision threshold (f1 | precision | recall).
+threshold_metric: f1
+
+# ``grid`` or ``random``.
+search: grid
+n_iter: 20
+n_jobs: -1
+
+models:
+  dummy:
+    enabled: true
+    scale: false
+    params: {}
+
+  logistic_regression:
+    enabled: true
+    scale: true
+    params:
+      model__C: [0.1, 1.0, 10.0]
+
+  random_forest:
+    enabled: true
+    scale: false
+    params:
+      model__n_estimators: [200, 400]
+      model__max_depth: [null, 12]
+      model__min_samples_leaf: [1, 5]
+
+  xgboost:
+    enabled: true
+    scale: false
+    params:
+      model__n_estimators: [200, 400]
+      model__max_depth: [3, 6]
+      model__learning_rate: [0.05, 0.1]

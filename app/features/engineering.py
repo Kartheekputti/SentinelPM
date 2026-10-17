@@ -24,6 +24,7 @@ from app.features.definitions import (
     NUMERIC_FEATURE_COLUMNS,
     ROTATIONAL_POWER,
     TEMPERATURE_DIFFERENCE,
+    safe_feature_name,
 )
 
 logger = get_logger(__name__)
@@ -158,6 +159,66 @@ class SensorFeatureEngineer(BaseEstimator, TransformerMixin):
         return np.asarray(NUMERIC_FEATURE_COLUMNS, dtype=object)
 
 
+class FeatureNameSanitizer(BaseEstimator, TransformerMixin):
+    """Rename dataframe columns to model-safe identifiers.
+
+    Downstream estimators such as XGBoost require feature names that omit
+    ``[``, ``]`` and ``<``. This stateless transformer keeps the mapping in one
+    place so training and inference produce identical column names.
+    """
+
+    def fit(self, X: pd.DataFrame, y: pd.Series | None = None) -> FeatureNameSanitizer:
+        """Record the sanitised output names and return ``self``.
+
+        Args:
+            X: Feature dataframe produced by the previous pipeline step.
+            y: Ignored; present for API compatibility.
+
+        Returns:
+            ``self``.
+        """
+        columns = getattr(X, "columns", None)
+        self.columns_: list[str] | None = (
+            [safe_feature_name(str(column)) for column in columns] if columns is not None else None
+        )
+        return self
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        """Return a copy of ``X`` with sanitised column names.
+
+        Args:
+            X: Feature dataframe.
+
+        Returns:
+            A new dataframe with sanitised column names.
+        """
+        result = X.copy()
+        result.columns = [safe_feature_name(str(column)) for column in result.columns]
+        return result
+
+    def get_feature_names_out(self, input_features: object = None) -> np.ndarray:
+        """Return sanitised feature names.
+
+        Args:
+            input_features: Names from the previous step, used when the
+                transformer has not been fitted.
+
+        Returns:
+            Array of sanitised feature names.
+
+        Raises:
+            FeatureError: If names are unavailable because the transformer was
+                neither fitted on a dataframe nor given ``input_features``.
+        """
+        stored = getattr(self, "columns_", None)
+        if stored is not None:
+            return np.asarray(stored, dtype=object)
+        if input_features is None:
+            msg = "input_features is required to build sanitised feature names"
+            raise FeatureError(msg)
+        return np.asarray([safe_feature_name(str(name)) for name in input_features], dtype=object)
+
+
 __all__ = [
     "CATEGORICAL_COLUMNS",
     "ENGINEERED_FEATURE_COLUMNS",
@@ -165,6 +226,7 @@ __all__ = [
     "RAW_FEATURE_COLUMNS",
     "TARGET_COLUMN",
     "TARGET_DERIVED_COLUMNS",
+    "FeatureNameSanitizer",
     "SensorFeatureEngineer",
     "add_engineered_features",
     "extract_target",

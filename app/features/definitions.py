@@ -13,6 +13,7 @@ target-derived failure-mode indicators (``TWF``, ``HDF``, ``PWF``, ``OSF``,
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 from app.data.schema import RAW_FEATURE_COLUMNS, SENSOR_COLUMNS, TARGET_DERIVED_COLUMNS
@@ -75,3 +76,34 @@ def documented_feature_names() -> tuple[str, ...]:
         Raw feature columns followed by the derived numeric features.
     """
     return (*RAW_FEATURE_COLUMNS, *ENGINEERED_FEATURE_COLUMNS)
+
+
+#: Feature names with spaces, brackets and units are convenient to read but are
+#: rejected by XGBoost (it disallows ``[``, ``]`` and ``<`` in feature names).
+#: Model inputs therefore use sanitised identifiers; the human-readable names
+#: are preserved here and in the EDA output.
+FEATURE_NAME_MAP: dict[str, str] = {
+    "Air temperature [K]": "air_temperature_k",
+    "Process temperature [K]": "process_temperature_k",
+    "Rotational speed [rpm]": "rotational_speed_rpm",
+    "Torque [Nm]": "torque_nm",
+    "Tool wear [min]": "tool_wear_min",
+    TEMPERATURE_DIFFERENCE: "temperature_difference_k",
+    ROTATIONAL_POWER: "rotational_power_w",
+}
+
+
+def safe_feature_name(name: str) -> str:
+    """Convert a human-readable feature name into a model-safe identifier.
+
+    Args:
+        name: Display name, optionally containing units in brackets.
+
+    Returns:
+        A lowercase snake_case identifier with no ``[``, ``]`` or ``<``
+        characters.
+    """
+    if name in FEATURE_NAME_MAP:
+        return FEATURE_NAME_MAP[name]
+    cleaned = name.replace("[", " ").replace("]", " ").replace("<", " ")
+    return re.sub(r"[^0-9a-zA-Z]+", "_", cleaned).strip("_").lower()

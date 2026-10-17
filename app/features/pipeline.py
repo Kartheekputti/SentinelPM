@@ -14,8 +14,12 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from app.data.schema import CATEGORICAL_COLUMNS, SENSOR_COLUMNS
-from app.features.definitions import NUMERIC_FEATURE_COLUMNS, TYPE_ENCODING_PREFIX
-from app.features.engineering import SensorFeatureEngineer
+from app.features.definitions import (
+    NUMERIC_FEATURE_COLUMNS,
+    TYPE_ENCODING_PREFIX,
+    safe_feature_name,
+)
+from app.features.engineering import FeatureNameSanitizer, SensorFeatureEngineer
 
 
 def build_feature_pipeline(*, scale: bool = False) -> Pipeline:
@@ -28,7 +32,7 @@ def build_feature_pipeline(*, scale: bool = False) -> Pipeline:
 
     Returns:
         A :class:`~sklearn.pipeline.Pipeline` that outputs a pandas dataframe
-        with stable column order.
+        with stable, model-safe column names.
     """
     preprocessor = ColumnTransformer(
         transformers=[
@@ -43,7 +47,10 @@ def build_feature_pipeline(*, scale: bool = False) -> Pipeline:
         verbose_feature_names_out=False,
     )
 
-    steps: list[tuple[str, object]] = [("features", preprocessor)]
+    steps: list[tuple[str, object]] = [
+        ("features", preprocessor),
+        ("names", FeatureNameSanitizer()),
+    ]
     if scale:
         steps.append(("scale", StandardScaler()))
 
@@ -55,17 +62,18 @@ def build_feature_pipeline(*, scale: bool = False) -> Pipeline:
 def feature_names(
     categorical_categories: tuple[str, ...] = ("H", "L", "M"),
 ) -> list[str]:
-    """Return the feature column names produced by the pipeline.
+    """Return the model-safe feature column names produced by the pipeline.
 
     Args:
         categorical_categories: Category values learned by the one-hot encoder,
             in the order produced by ``OneHotEncoder`` (sorted).
 
     Returns:
-        The numeric feature names followed by the one-hot encoded names.
+        The sanitised numeric feature names followed by the one-hot encoded
+        names.
     """
     encoded = [f"{TYPE_ENCODING_PREFIX}{category}" for category in categorical_categories]
-    return [*NUMERIC_FEATURE_COLUMNS, *encoded]
+    return [safe_feature_name(name) for name in (*NUMERIC_FEATURE_COLUMNS, *encoded)]
 
 
 def output_feature_names(pipeline: Pipeline) -> np.ndarray:

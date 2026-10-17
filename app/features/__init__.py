@@ -3,11 +3,13 @@
 from app.features.definitions import (
     ENGINEERED_FEATURE_COLUMNS,
     FEATURE_DEFINITIONS,
+    FEATURE_NAME_MAP,
     NUMERIC_FEATURE_COLUMNS,
     ROTATIONAL_POWER,
     TEMPERATURE_DIFFERENCE,
     FeatureDefinition,
     documented_feature_names,
+    safe_feature_name,
 )
 from app.features.eda import (
     EDAReport,
@@ -20,6 +22,7 @@ from app.features.eda import (
     top_feature_correlations,
 )
 from app.features.engineering import (
+    FeatureNameSanitizer,
     SensorFeatureEngineer,
     add_engineered_features,
     extract_target,
@@ -30,11 +33,13 @@ from app.features.pipeline import build_feature_pipeline, feature_names, output_
 __all__ = [
     "ENGINEERED_FEATURE_COLUMNS",
     "FEATURE_DEFINITIONS",
+    "FEATURE_NAME_MAP",
     "NUMERIC_FEATURE_COLUMNS",
     "ROTATIONAL_POWER",
     "TEMPERATURE_DIFFERENCE",
     "EDAReport",
     "FeatureDefinition",
+    "FeatureNameSanitizer",
     "SensorFeatureEngineer",
     "add_engineered_features",
     "build_feature_pipeline",
@@ -49,5 +54,6 @@ __all__ = [
     "numeric_distributions",
     "output_feature_names",
     "prepare_feature_frame",
+    "safe_feature_name",
     "top_feature_correlations",
 ]

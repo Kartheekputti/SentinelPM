@@ -7,7 +7,7 @@ from collections.abc import Callable
 import pandas as pd
 
 from app.data.schema import TARGET_DERIVED_COLUMNS
-from app.features.definitions import NUMERIC_FEATURE_COLUMNS
+from app.features.definitions import NUMERIC_FEATURE_COLUMNS, safe_feature_name
 from app.features.engineering import extract_target, prepare_feature_frame
 from app.features.pipeline import (
     build_feature_pipeline,
@@ -26,9 +26,8 @@ class TestFeaturePipeline:
     def test_numeric_block_preserved(self, valid_frame: pd.DataFrame) -> None:
         pipeline = build_feature_pipeline()
         transformed = pipeline.fit_transform(prepare_feature_frame(valid_frame))
-        assert list(transformed.columns[: len(NUMERIC_FEATURE_COLUMNS)]) == list(
-            NUMERIC_FEATURE_COLUMNS
-        )
+        expected = [safe_feature_name(name) for name in NUMERIC_FEATURE_COLUMNS]
+        assert list(transformed.columns[: len(NUMERIC_FEATURE_COLUMNS)]) == expected
 
     def test_transform_after_fit_keeps_columns(self, valid_frame: pd.DataFrame) -> None:
         pipeline = build_feature_pipeline()

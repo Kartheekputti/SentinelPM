@@ -47,6 +47,17 @@ The preprocessing pipeline emits columns in this stable order:
    `rotational_power [W]`
 2. One-hot encoded `Type` columns (sorted): `Type_H`, `Type_L`, `Type_M`
 
+The final pipeline step renames these display names to model-safe identifiers
+(XGBoost forbids `[`, `]` and `<` in feature names). The matrix therefore uses:
+
+```
+air_temperature_k, process_temperature_k, rotational_speed_rpm, torque_nm,
+tool_wear_min, temperature_difference_k, rotational_power_w, type_h, type_l, type_m
+```
+
+The human-readable names remain the source of truth for documentation and EDA
+output; the mapping lives in `app/features/definitions.py`.
+
 Unseen `Type` values at inference are ignored (encoded as all zeros) rather than
 raising an error.
 

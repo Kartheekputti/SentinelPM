@@ -43,7 +43,7 @@ def _build_frame(n_rows: int, overrides: dict[str, Any]) -> pd.DataFrame:
     return frame
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def make_frame() -> Callable[..., pd.DataFrame]:
     """Return a factory that builds a valid raw frame of ``n_rows`` rows."""
 
