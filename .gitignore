@@ -1,0 +1,48 @@
+# Environments
+.venv/
+venv/
+env/
+.env
+
+# Python cache / build
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Datasets and artifacts are not committed
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+artifacts/*
+!artifacts/.gitkeep
+
+# Trained models and binary artifacts
+*.pkl
+*.joblib
+*.ubj
+*.onnx
+
+# Experiment tracking
+mlruns/
+mlartifacts/
+
+# Notebooks / OS noise
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
