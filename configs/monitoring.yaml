@@ -1,0 +1,28 @@
+# SentinelPM monitoring and alerting configuration
+#
+# This file specifies operational thresholds, statistical drift parameters,
+# and alert cooldown windows.
+
+# Operational SLAs
+latency_sla_p95_ms: 250.0
+max_error_rate: 0.05
+monitoring_window_size: 1000
+
+# Statistical Drift Detection
+# Feature-level significance threshold for two-sample Kolmogorov-Smirnov test (continuous)
+drift_pvalue_threshold: 0.05
+
+# Categorical Population Stability Index threshold (Type)
+# Values < 0.10: no shift; 0.10 - 0.20: moderate shift; >= 0.20: significant drift
+drift_psi_threshold: 0.20
+
+# Minimum observation window before conducting statistical drift tests
+drift_min_sample_size: 30
+
+# Alerting & Deduplication
+# Suppression window in seconds to prevent alert storms on persistent conditions
+alert_cooldown_seconds: 300
+
+# Prediction Distribution Shift
+# Threshold difference between rolling failure prediction rate and baseline training rate (~0.0339)
+prediction_shift_threshold: 0.10
