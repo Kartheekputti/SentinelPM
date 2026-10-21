@@ -37,6 +37,21 @@ class Settings(BaseModel):
     data_dir: Path = Path("data")
     artifacts_dir: Path = Path("artifacts")
 
+    # Part 2: Registry & Inference
+    model_name: str = "random_forest"
+    model_version: str = "1.0.0"
+    mlflow_tracking_uri: str = "mlruns"
+    mlflow_experiment_name: str = "sentinelpm"
+    decision_threshold: float | None = None
+    risk_threshold_low: float = 0.2
+    risk_threshold_medium: float = 0.5
+    max_batch_size: int = 500
+
+    # Part 2: Monitoring & Alerts
+    drift_pvalue_threshold: float = 0.05
+    alert_cooldown_seconds: int = 300
+    monitoring_window_size: int = 1000
+
     model_config = {"frozen": True, "validate_default": True}
 
     @field_validator("log_level")
@@ -64,6 +79,16 @@ class Settings(BaseModel):
     def processed_data_dir(self) -> Path:
         """Directory holding derived datasets."""
         return self.data_dir / "processed"
+
+    @property
+    def models_dir(self) -> Path:
+        """Directory holding trained models and metadata."""
+        return self.artifacts_dir / "models"
+
+    @property
+    def reports_dir(self) -> Path:
+        """Directory holding generated evaluation reports."""
+        return self.artifacts_dir / "reports"
 
 
 def _load_yaml_config(config_path: Path) -> dict[str, Any]:

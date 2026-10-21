@@ -58,6 +58,26 @@ def valid_frame(make_frame: Callable[..., pd.DataFrame]) -> pd.DataFrame:
     return make_frame(6)
 
 
+@pytest.fixture
+def sample_trained_rf(valid_frame: pd.DataFrame) -> Any:
+    """Return a fitted Random Forest pipeline on small sample data."""
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.pipeline import Pipeline
+
+    from app.features.pipeline import build_feature_pipeline
+
+    features = valid_frame.copy()
+    y = [0] * (len(features) - 1) + [1]
+    pipeline = Pipeline(
+        [
+            ("features", build_feature_pipeline(scale=False)),
+            ("model", RandomForestClassifier(n_estimators=10, random_state=42)),
+        ]
+    )
+    pipeline.fit(features, y)
+    return pipeline
+
+
 __all__ = [
     "BINARY_COLUMNS",
     "CATEGORICAL_COLUMNS",
