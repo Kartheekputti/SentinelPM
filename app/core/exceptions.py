@@ -29,3 +29,23 @@ class FeatureError(SentinelPMError):
 
 class TrainingError(SentinelPMError):
     """Raised when model training or evaluation cannot be completed."""
+
+
+class ExplainabilityError(SentinelPMError):
+    """Raised when model explanations cannot be computed or formatted."""
+
+
+class ModelRegistryError(SentinelPMError):
+    """Raised when a model version cannot be tracked, registered, or loaded."""
+
+
+class InferenceError(SentinelPMError):
+    """Raised when input validation or model scoring fails during inference."""
+
+
+class MonitoringError(SentinelPMError):
+    """Raised when telemetry collection or drift calculation fails."""
+
+
+class AlertError(SentinelPMError):
+    """Raised when alert evaluation or dispatching fails."""
