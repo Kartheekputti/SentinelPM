@@ -245,7 +245,7 @@ Launch the multi-page Streamlit dashboard:
 python -m scripts.run_dashboard
 
 # Or directly using Streamlit
-streamlit run app/dashboard/app.py --server.port 8501
+streamlit run app/dashboard/dashboard.py --server.port 8501
 ```
 
 Access the dashboard at [http://localhost:8501](http://localhost:8501).

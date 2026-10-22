@@ -12,7 +12,7 @@ from app.core.config import get_settings
 def main() -> None:
     """Launch Streamlit dashboard."""
     settings = get_settings()
-    app_path = Path(__file__).resolve().parent.parent / "app" / "dashboard" / "app.py"
+    app_path = Path(__file__).resolve().parent.parent / "app" / "dashboard" / "dashboard.py"
 
     cmd = [
         sys.executable,

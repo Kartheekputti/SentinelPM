@@ -266,3 +266,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(router)
 
     return app
+
+
+# Export application instance for ASGI servers
+app = create_app()

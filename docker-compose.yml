@@ -27,7 +27,7 @@ services:
   dashboard:
     image: sentinelpm:latest
     container_name: sentinelpm-dashboard
-    command: ["streamlit", "run", "app/dashboard/app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+    command: ["streamlit", "run", "app/dashboard/dashboard.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
     ports:
       - "8501:8501"
     environment:

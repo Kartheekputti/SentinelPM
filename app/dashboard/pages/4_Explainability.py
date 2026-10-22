@@ -4,7 +4,16 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from pathlib import Path
+
+# Ensure SentinelPM project root is always at the head of sys.path
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+DASHBOARD_DIR = Path(__file__).resolve().parents[1]
+while str(DASHBOARD_DIR) in sys.path:
+    sys.path.remove(str(DASHBOARD_DIR))
 
 import pandas as pd
 import streamlit as st
