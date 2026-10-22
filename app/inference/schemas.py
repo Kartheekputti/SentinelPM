@@ -99,6 +99,26 @@ class SensorRecord(BaseModel):
                         "strictly forbidden in prediction features to prevent data leakage."
                     )
                     raise ValueError(msg)
+
+            # Normalize common case / naming variations to field names
+            normalized = {}
+            for k, v in data.items():
+                k_norm = k.lower().replace(" ", "_").replace("[", "").replace("]", "").strip()
+                if k_norm in ("air_temperature_k", "air_temperature"):
+                    normalized["air_temperature_k"] = v
+                elif k_norm in ("process_temperature_k", "process_temperature"):
+                    normalized["process_temperature_k"] = v
+                elif k_norm in ("rotational_speed_rpm", "rotational_speed"):
+                    normalized["rotational_speed_rpm"] = v
+                elif k_norm in ("torque_nm", "torque"):
+                    normalized["torque_nm"] = v
+                elif k_norm in ("tool_wear_min", "tool_wear"):
+                    normalized["tool_wear_min"] = v
+                elif k_norm == "type":
+                    normalized["type"] = v
+                else:
+                    normalized[k] = v
+            return normalized
         return data
 
     def to_raw_dict(self) -> dict[str, Any]:

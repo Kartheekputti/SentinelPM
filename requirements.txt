@@ -21,3 +21,8 @@ fastapi>=0.110
 uvicorn>=0.29
 httpx>=0.27
 scipy>=1.12
+
+# Part 3: Streamlit dashboard and visualization
+streamlit>=1.32
+altair>=5.0
+

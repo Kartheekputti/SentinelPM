@@ -52,6 +52,11 @@ class Settings(BaseModel):
     alert_cooldown_seconds: int = 300
     monitoring_window_size: int = 1000
 
+    # Part 3: Dashboard & API Client
+    api_url: str = "http://127.0.0.1:8000"
+    dashboard_port: int = 8501
+    max_upload_size_mb: int = 10
+
     model_config = {"frozen": True, "validate_default": True}
 
     @field_validator("log_level")

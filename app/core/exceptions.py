@@ -49,3 +49,11 @@ class MonitoringError(SentinelPMError):
 
 class AlertError(SentinelPMError):
     """Raised when alert evaluation or dispatching fails."""
+
+
+class ApiClientError(SentinelPMError):
+    """Raised when the dashboard client cannot communicate with or parse responses from the REST API."""
+
+
+class DashboardError(SentinelPMError):
+    """Raised when an internal dashboard rendering or validation error occurs."""
