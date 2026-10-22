@@ -1,0 +1,45 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sentinelpm:latest
+    container_name: sentinelpm-api
+    ports:
+      - "8000:8000"
+    environment:
+      - SENTINELPM_ENVIRONMENT=prod
+      - SENTINELPM_LOG_LEVEL=INFO
+      - SENTINELPM_API_PORT=8000
+      - SENTINELPM_ACTIVE_MODEL=random_forest
+    volumes:
+      - ./artifacts:/app/artifacts:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - sentinelpm-net
+
+  dashboard:
+    image: sentinelpm:latest
+    container_name: sentinelpm-dashboard
+    command: ["streamlit", "run", "app/dashboard/app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+    ports:
+      - "8501:8501"
+    environment:
+      - SENTINELPM_API_URL=http://api:8000
+      - SENTINELPM_ENVIRONMENT=prod
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - sentinelpm-net
+
+networks:
+  sentinelpm-net:
+    driver: bridge
